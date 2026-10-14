@@ -35,6 +35,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[dotnet]
+
+project/assembly_name="Arcane Roll"
+
 [input_devices]
 
 sensors/enable_accelerometer=true
