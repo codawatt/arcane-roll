@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://tpcb6aywe7dp"]
+
+[ext_resource type="Script" uid="uid://c01ur4yqhp0p2" path="res://scenes/roll/roll_controller.gd" id="1_k4smy"]
+
+[node name="RollScreen" type="Control" unique_id=632862155]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_k4smy")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=36978153]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=1674366895]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="ScreenLabel" type="Label" parent="Margin/Layout" unique_id=946286340]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "ROLL SCREEN (shell)"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Margin/Layout" unique_id=2084195469]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ConfirmButton" type="Button" parent="Margin/Layout" unique_id=723543725]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Confirm"

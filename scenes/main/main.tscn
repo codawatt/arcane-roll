@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://nvvfsmghm5k"]
+
+[ext_resource type="Script" uid="uid://dery74hcafvy0" path="res://scenes/main/main.gd" id="1_hyk8p"]
+
+[sub_resource type="Environment" id="Environment_adskl"]
+background_mode = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_vom5j"]
+
+[node name="Main" type="Node" unique_id=990455748]
+script = ExtResource("1_hyk8p")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1214656197]
+environment = SubResource("Environment_adskl")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1605619376]
+layer = -1
+
+[node name="BackgroundPlaceholder" type="ColorRect" parent="BackgroundLayer" unique_id=53871710]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 1)
+
+[node name="World" type="Node3D" parent="." unique_id=1964011090]
+
+[node name="Camera3D" type="Camera3D" parent="World" unique_id=1522718549]
+transform = Transform3D(1, 0, 0, 0, 0.37136784, 0.9284858, 0, -0.9284858, 0.37136784, 0, 3, 1.2)
+fov = 40.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="World" unique_id=1656893719]
+transform = Transform3D(0.8660254, -0.40957603, 0.28678823, 0, 0.57357645, 0.81915206, -0.5, -0.7094065, 0.49673176, 0, 0, 0)
+
+[node name="DieAnchor" type="Marker3D" parent="World" unique_id=564505385]
+
+[node name="LayerTestCube" type="MeshInstance3D" parent="World/DieAnchor" unique_id=722526966]
+mesh = SubResource("BoxMesh_vom5j")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=280255411]
+
+[node name="SafeArea" type="MarginContainer" parent="UILayer" unique_id=894106922]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScreenHost" type="Control" parent="UILayer/SafeArea" unique_id=1577216462]
+layout_mode = 2
