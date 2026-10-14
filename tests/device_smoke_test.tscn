@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://4bkic0h5bvhl"]
+
+[ext_resource type="Script" uid="uid://brqhcbyyd4i8x" path="res://tests/device_smoke_test.gd" id="1_6otgl"]
+
+[node name="Control" type="Control" unique_id=1920171781]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6otgl")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1684588501]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.187, 0.14500001, 0.25, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=42105973]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="InfoLabel" type="Label" parent="Margin" unique_id=1064558482]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
