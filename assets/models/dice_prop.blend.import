@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://wklqqlp2rvrx"
+uid="uid://b8iemek5wmwmr"
 path="res://.godot/imported/dice_prop.blend-96d2c376dd00d2be8470a2c846a973f7.scn"
 
 [deps]
@@ -19,18 +19,18 @@ nodes/root_script=null
 mesh_library/use_node_names_as_mesh_names=false
 array_mesh/deduplicate_surfaces=true
 nodes/apply_root_scale=true
-nodes/root_scale=1.0
+nodes/root_scale=10.0
 nodes/import_as_skeleton_bones=false
 nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true
-meshes/generate_lods=true
+meshes/generate_lods=false
 meshes/create_shadow_meshes=true
 meshes/light_baking=1
 meshes/lightmap_texel_size=0.2
 meshes/force_disable_compression=false
 skins/use_named_skins=true
-animation/import=true
+animation/import=false
 animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
@@ -39,7 +39,15 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"materials": {
+"VertextColor": {
+"use_external/enabled": true,
+"use_external/fallback_path": "res://assets/models/VertextColor.tres",
+"use_external/path": "uid://y7sh8x54dxar"
+}
+}
+}
 blender/nodes/visible=0
 blender/nodes/active_collection_only=false
 blender/nodes/punctual_lights=true

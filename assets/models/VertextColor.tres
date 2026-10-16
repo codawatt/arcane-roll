@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://y7sh8x54dxar"]
+
+[resource]
+resource_name = "VertextColor"
+cull_mode = 2
+vertex_color_use_as_albedo = true
+roughness = 0.4
+metadata/extras = {
+"yp": {
+"active_ypaint_node": ""
+}
+}

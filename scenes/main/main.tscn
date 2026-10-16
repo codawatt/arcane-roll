@@ -1,19 +1,14 @@
 [gd_scene format=3 uid="uid://nvvfsmghm5k"]
 
 [ext_resource type="Script" uid="uid://dery74hcafvy0" path="res://scenes/main/main.gd" id="1_hyk8p"]
-
-[sub_resource type="Environment" id="Environment_adskl"]
-background_mode = 3
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.4
-
-[sub_resource type="BoxMesh" id="BoxMesh_vom5j"]
+[ext_resource type="Environment" uid="uid://c2c5tyskqvvbi" path="res://scenes/main/main_environment.tres" id="2_iuonh"]
+[ext_resource type="PackedScene" uid="uid://bnj2t2pygcpdi" path="res://scenes/die/d6.tscn" id="3_k2fmo"]
 
 [node name="Main" type="Node" unique_id=990455748]
 script = ExtResource("1_hyk8p")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1214656197]
-environment = SubResource("Environment_adskl")
+environment = ExtResource("2_iuonh")
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1605619376]
 layer = -1
@@ -25,17 +20,23 @@ color = Color(0, 0, 0, 1)
 
 [node name="World" type="Node3D" parent="." unique_id=1964011090]
 
-[node name="Camera3D" type="Camera3D" parent="World" unique_id=1522718549]
-transform = Transform3D(1, 0, 0, 0, 0.37136784, 0.9284858, 0, -0.9284858, 0.37136784, 0, 3, 1.2)
-fov = 40.0
+[node name="CameraRig" type="Node3D" parent="World" unique_id=1264372098]
+transform = Transform3D(0.81915206, -0.32898995, 0.46984634, 0, 0.81915206, 0.57357645, -0.57357645, -0.46984634, 0.6710101, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="World/CameraRig" unique_id=1522718549]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 1, 0, 0, 6)
+keep_aspect = 0
+fov = 30.0
 
 [node name="KeyLight" type="DirectionalLight3D" parent="World" unique_id=1656893719]
-transform = Transform3D(0.8660254, -0.40957603, 0.28678823, 0, 0.57357645, 0.81915206, -0.5, -0.7094065, 0.49673176, 0, 0, 0)
+transform = Transform3D(0.9396926, -0.29619813, 0.17101005, 0, 0.49999997, 0.86602545, -0.34202012, -0.8137977, 0.46984628, 0, 0, 0)
+
+[node name="FaceReader" type="Marker3D" parent="World" unique_id=42311189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="DieAnchor" type="Marker3D" parent="World" unique_id=564505385]
 
-[node name="LayerTestCube" type="MeshInstance3D" parent="World/DieAnchor" unique_id=722526966]
-mesh = SubResource("BoxMesh_vom5j")
+[node name="D6" parent="World/DieAnchor" unique_id=1854806385 instance=ExtResource("3_k2fmo")]
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=280255411]
 

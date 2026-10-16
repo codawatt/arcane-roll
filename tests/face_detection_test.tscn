@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://dcmpkv44wggid"]
+
+[ext_resource type="Script" uid="uid://7muu6g5bxi0g" path="res://tests/face_detection_test.gd" id="1_63dwc"]
+[ext_resource type="Environment" uid="uid://c2c5tyskqvvbi" path="res://scenes/main/main_environment.tres" id="1_yuuai"]
+[ext_resource type="PackedScene" uid="uid://bnj2t2pygcpdi" path="res://scenes/die/d6.tscn" id="2_63dwc"]
+
+[node name="FaceDetectionTest" type="Node3D" unique_id=29860196]
+script = ExtResource("1_63dwc")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=218221496]
+environment = ExtResource("1_yuuai")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1958687152]
+transform = Transform3D(0.81915206, -0.32898995, 0.46984634, 0, 0.81915206, 0.57357645, -0.57357645, -0.46984634, 0.6710101, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=268564610]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 1, 0, 0, 6)
+keep_aspect = 0
+fov = 30.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=1184735647]
+transform = Transform3D(0.9396926, -0.29619813, 0.17101005, 0, 0.49999997, 0.86602545, -0.34202012, -0.8137977, 0.46984628, 0, 0, 0)
+
+[node name="FaceReader" type="Marker3D" parent="." unique_id=1261278895]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="D6" parent="." unique_id=1854806385 instance=ExtResource("2_63dwc")]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=824468763]
+
+[node name="InfoLabel" type="Label" parent="HUD" unique_id=202617105]
+offset_left = 40.0
+offset_top = 80.0
+offset_right = 80.0
+offset_bottom = 103.0
+theme_override_font_sizes/font_size = 40
