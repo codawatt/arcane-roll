@@ -19,10 +19,10 @@ keep_aspect = 0
 fov = 30.0
 
 [node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=1184735647]
-transform = Transform3D(0.9396926, -0.29619813, 0.17101005, 0, 0.49999997, 0.86602545, -0.34202012, -0.8137977, 0.46984628, 0, 0, 0)
+transform = Transform3D(0.9396926, -0.116977766, 0.3213938, 0, 0.9396926, 0.34202012, -0.34202012, -0.3213938, 0.8830222, 0, 0, 0)
 
 [node name="FaceReader" type="Marker3D" parent="." unique_id=1261278895]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 
 [node name="D6" parent="." unique_id=1854806385 instance=ExtResource("2_63dwc")]
 

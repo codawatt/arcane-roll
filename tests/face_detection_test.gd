@@ -52,13 +52,15 @@ func _run_logic_check() -> void:
 
 func _show_next_face() -> void:
 	_manual_face = _manual_face % 6 + 1
-	_die.basis = Die.basis_with_face_toward(_manual_face, _read_direction(), randf() * TAU)
+	_die.basis = Die.basis_with_face_toward(_manual_face, _read_direction(), _random_quarter_turn())
 	_update_label("Expected %d" % _manual_face)
 
 
 func _show_random_tilt() -> void:
 	var face := randi_range(1, 6)
-	_die.basis = _random_tilt() * Die.basis_with_face_toward(face, _read_direction(), randf() * TAU)
+	_die.basis = (
+		_random_tilt() * Die.basis_with_face_toward(face, _read_direction(), _random_quarter_turn())
+	)
 	_update_label("Tilted, built with %d up" % face)
 
 
@@ -67,6 +69,12 @@ func _random_tilt() -> Basis:
 	if axis.is_zero_approx():
 		axis = Vector3.RIGHT
 	return Basis(axis.normalized(), deg_to_rad(randf_range(-MAX_TEST_TILT_DEG, MAX_TEST_TILT_DEG)))
+
+
+## Quarter turns only: any other twist around a horizontal read direction
+## would leave the die resting on an edge.
+func _random_quarter_turn() -> float:
+	return randi_range(0, 3) * (PI / 2.0)
 
 
 func _update_label(header: String) -> void:
