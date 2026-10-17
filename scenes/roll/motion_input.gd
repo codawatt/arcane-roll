@@ -7,7 +7,7 @@ extends Node
 
 ## Emitted once per deliberate shake. intensity (0..1) reflects how hard it was.
 signal shake_detected(intensity: float)
-
+signal accelerometer_detected
 ## A real accelerometer always reads ~9.8 m/s² (gravity); below this it is treated as absent.
 const ABSENT_ACCEL_LEVEL := 0.5
 ## Seconds the accelerometer may stay silent after activation before being reported absent.
@@ -121,8 +121,9 @@ func _process(delta: float) -> void:
 
 	var accel := Input.get_accelerometer()
 	var gyro := Input.get_gyroscope()
-	if accel.length() > ABSENT_ACCEL_LEVEL:
+	if not _accel_seen and accel.length() > ABSENT_ACCEL_LEVEL:
 		_accel_seen = true
+		accelerometer_detected.emit()
 	if gyro != Vector3.ZERO:
 		_gyro_seen = true
 	if not _accel_seen:

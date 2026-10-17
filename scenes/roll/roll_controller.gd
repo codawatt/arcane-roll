@@ -12,33 +12,43 @@ signal state_changed(new_state: State)
 
 ## Tumble strength for the Roll button. Chunk 9 passes shake strength and gyro axis instead.
 const BUTTON_ROLL_INTENSITY := 0.6
-
+## Phone rotation maps onto the tumble with this sign: +1 = the die turns with the phone
+## (chosen on device in Chunk 8).
+const SPIN_SIGN := 1.0
+## Below this gyro speed (rad/s) the phone's rotation is ignored and the tumble axis is random.
+const MIN_TWIST_SPEED := 1.0
+## Gyro speed (rad/s) that counts as a full-strength twist.
+const STRONG_TWIST_SPEED := 8.0
 var _state := State.LOCKED
 var _die: Die
 var _face_reader: Node3D
 var _resolver := RollResolver.new()
 var _result := 0  # Generated result of the current roll.
 var _shown_face := 0  # Face detected on the settled die: what the player sees.
-
+var _camera: Camera3D
 @onready var _status_label: Label = %StatusLabel
 @onready var _result_label: Label = %ResultLabel
 @onready var _unlock_button: Button = %UnlockButton
 @onready var _roll_button: Button = %RollButton
 @onready var _roll_again_button: Button = %RollAgainButton
 @onready var _confirm_button: Button = %ConfirmButton
+@onready var _motion: MotionInput = $MotionInput
 
 
 ## Called by Main before the screen enters the tree.
-func setup(die: Die, face_reader: Node3D) -> void:
+func setup(die: Die, face_reader: Node3D, camera: Camera3D) -> void:
 	_die = die
 	_face_reader = face_reader
+	_camera = camera
 
 
 func _ready() -> void:
 	assert(
-		_die != null and _face_reader != null,
+		_die != null and _face_reader != null and _camera != null,
 		"RollController.setup() must be called before the screen is added."
 	)
+	_motion.shake_detected.connect(_on_shake_detected)
+	_motion.accelerometer_detected.connect(_refresh_ui)
 	_unlock_button.pressed.connect(_on_unlock_pressed)
 	_roll_button.pressed.connect(_on_roll_pressed)
 	_roll_again_button.pressed.connect(_on_roll_again_pressed)
@@ -115,6 +125,7 @@ func _change_state(to: State) -> void:
 		)
 		return
 	_state = to
+	_motion.set_active(_state == State.READY)  # GDD: sensors only while unlocked and ready.
 	_refresh_ui()
 	state_changed.emit(_state)
 
@@ -129,7 +140,9 @@ func _refresh_ui() -> void:
 		State.LOCKED:
 			_status_label.text = "Locked"
 		State.READY:
-			_status_label.text = "Ready - tap Roll"
+			_status_label.text = (
+				"Ready - shake or tap Roll" if _motion.has_accelerometer() else "Ready - tap Roll"
+			)
 		State.ROLLING:
 			_status_label.text = "Rolling..."
 		State.RESULT:
@@ -159,3 +172,14 @@ func _on_die_roll_finished() -> void:
 		assert(false, "Roll verification failed")
 	_shown_face = _die.get_face_toward(direction)  # Always show what the die shows.
 	_change_state(State.RESULT)
+
+
+## A deliberate shake rolls the die. The shake's strength and the phone's twist shape
+## the tumble (intensity and direction); the result is still decided by RollResolver.
+func _on_shake_detected(shake_intensity: float) -> void:
+	# Read the gyro before _start_roll(): leaving Ready deactivates and resets MotionInput.
+	var twist := MotionInput.device_to_world(_motion.angular_velocity, _camera) * SPIN_SIGN
+	var twist_speed := twist.length()
+	var twist_intensity := clampf(twist_speed / STRONG_TWIST_SPEED, 0.0, 1.0)
+	var spin_axis := twist if twist_speed >= MIN_TWIST_SPEED else Vector3.ZERO
+	_start_roll(maxf(shake_intensity, twist_intensity), spin_axis)

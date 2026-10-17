@@ -15,6 +15,7 @@ var _current_id: ScreenId = ScreenId.MAIN_MENU
 @onready var _screen_host: Control = $UILayer/SafeArea/ScreenHost
 @onready var _die: Die = $World/DieAnchor/D6
 @onready var _face_reader: Marker3D = $World/FaceReader
+@onready var _camera: Camera3D = $World/CameraRig/Camera3D
 
 
 func _ready() -> void:
@@ -58,7 +59,7 @@ func _show_main_menu() -> void:
 
 func _show_roll_screen() -> void:
 	var roll := ROLL_SCREEN_SCENE.instantiate() as RollController
-	roll.setup(_die, _face_reader)  # Must happen before the screen enters the tree.
+	roll.setup(_die, _face_reader, _camera)
 	roll.exit_requested.connect(_show_main_menu, CONNECT_DEFERRED)
 	_swap_screen(roll, ScreenId.ROLL)
 
