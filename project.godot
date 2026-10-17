@@ -13,13 +13,17 @@ config_version=5
 config/name="Arcane Roll"
 config/description="D&D 3D dice roller."
 config/version="1.0.0"
-run/main_scene="uid://nvvfsmghm5k"
+run/main_scene="uid://c8p1rus6c4tnf"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/show_image=false
 config/icon="uid://b3ns7fbfxqr18"
+
+[autoload]
+
+Settings="*uid://bjv7i0iub7ar"
 
 [debug]
 

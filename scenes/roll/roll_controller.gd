@@ -19,9 +19,8 @@ const SPIN_SIGN := 1.0
 const MIN_TWIST_SPEED := 1.0
 ## Gyro speed (rad/s) that counts as a full-strength twist.
 const STRONG_TWIST_SPEED := 8.0
-## Key twist unlocks and rolls again (user option, on by default). Chunk 10 will set
-## this from saved Settings; until then, switch it on the RollScreen node to test.
-@export var motion_gestures_enabled := true
+## Key twist unlocks and rolls again. Mirrors Settings.motion_gestures (user option).
+var motion_gestures_enabled := true
 var _state := State.LOCKED
 var _die: Die
 var _face_reader: Node3D
@@ -59,8 +58,8 @@ func _ready() -> void:
 	_roll_again_button.pressed.connect(_on_roll_again_pressed)
 	_confirm_button.pressed.connect(exit_requested.emit)
 	_die.roll_finished.connect(_on_die_roll_finished)
-	_update_motion()
-	_refresh_ui()
+	Settings.changed.connect(_apply_settings)
+	_apply_settings()
 
 
 func _exit_tree() -> void:
@@ -127,6 +126,12 @@ func _update_motion() -> void:
 		or (motion_gestures_enabled and (_state == State.LOCKED or _state == State.RESULT))
 	)
 	_motion.set_active(listening)
+
+
+func _apply_settings() -> void:
+	motion_gestures_enabled = Settings.motion_gestures
+	_update_motion()
+	_refresh_ui()
 
 
 func _twist_available() -> bool:

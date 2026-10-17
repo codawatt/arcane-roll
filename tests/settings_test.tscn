@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://c8p1rus6c4tnf"]
+
+[ext_resource type="Script" uid="uid://dfqmlenpl85r3" path="res://tests/settings_test.gd" id="1_slb8x"]
+
+[node name="SettingsTest" type="Control" unique_id=123813634]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_slb8x")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1007557519]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=2021756469]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=1154334172]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="InfoLabel" type="Label" parent="Margin/Layout" unique_id=530795354]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+
+[node name="RandomizeButton" type="Button" parent="Margin/Layout" unique_id=303059894]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Randomize colors"
+
+[node name="MuteButton" type="Button" parent="Margin/Layout" unique_id=2021778019]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Toggle Mute"
+
+[node name="GesturesButton" type="Button" parent="Margin/Layout" unique_id=137316766]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Toggle Motions Gestures"
+
+[node name="ResetButton" type="Button" parent="Margin/Layout" unique_id=958920566]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Reset Colors"
