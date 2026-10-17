@@ -4,12 +4,12 @@ extends Node3D
 ## plus a chi-square uniformity check on the displayed faces.
 ## Then: tap / click / Space performs a single roll (instant snap; animation comes in Chunk 7).
 
-const ROLLS := 60_000
+const ROLLS := 600_000
 ## Chi-square critical value for 5 degrees of freedom at significance 0.001:
 ## a perfectly fair die exceeds this by chance only once in 1000 runs.
 const CHI_SQUARE_CRITICAL := 20.515
 ## Set >= 0 to reproduce a specific run (the seed is printed every run); -1 = new seed.
-const FIXED_SEED := -1
+const FIXED_SEED := 12345
 
 var _resolver: RollResolver
 var _batch_summary := ""
