@@ -19,6 +19,9 @@ const SPIN_SIGN := 1.0
 const MIN_TWIST_SPEED := 1.0
 ## Gyro speed (rad/s) that counts as a full-strength twist.
 const STRONG_TWIST_SPEED := 8.0
+## Key twist unlocks and rolls again (user option, on by default). Chunk 10 will set
+## this from saved Settings; until then, switch it on the RollScreen node to test.
+@export var motion_gestures_enabled := true
 var _state := State.LOCKED
 var _die: Die
 var _face_reader: Node3D
@@ -49,11 +52,14 @@ func _ready() -> void:
 	)
 	_motion.shake_detected.connect(_on_shake_detected)
 	_motion.accelerometer_detected.connect(_refresh_ui)
+	_motion.twist_detected.connect(_on_twist_detected)
+	_motion.gyroscope_detected.connect(_refresh_ui)
 	_unlock_button.pressed.connect(_on_unlock_pressed)
 	_roll_button.pressed.connect(_on_roll_pressed)
 	_roll_again_button.pressed.connect(_on_roll_again_pressed)
 	_confirm_button.pressed.connect(exit_requested.emit)
 	_die.roll_finished.connect(_on_die_roll_finished)
+	_update_motion()
 	_refresh_ui()
 
 
@@ -88,6 +94,43 @@ func _on_roll_again_pressed() -> void:
 
 func _on_roll_pressed() -> void:
 	_start_roll(BUTTON_ROLL_INTENSITY, Vector3.ZERO)
+
+
+## A deliberate shake rolls the die. The shake's strength and the phone's twist shape
+## the tumble (intensity and direction); the result is still decided by RollResolver.
+func _on_shake_detected(shake_intensity: float) -> void:
+	# Read the gyro before _start_roll(): leaving Ready deactivates and resets MotionInput.
+	var twist := MotionInput.device_to_world(_motion.angular_velocity, _camera) * SPIN_SIGN
+	var twist_speed := twist.length()
+	var twist_intensity := clampf(twist_speed / STRONG_TWIST_SPEED, 0.0, 1.0)
+	var spin_axis := twist if twist_speed >= MIN_TWIST_SPEED else Vector3.ZERO
+	_start_roll(maxf(shake_intensity, twist_intensity), spin_axis)
+
+
+## Key twist: unlock when Locked, roll again on the Result screen. Ignored in other states.
+func _on_twist_detected() -> void:
+	if not motion_gestures_enabled:
+		return
+	match _state:
+		State.LOCKED:
+			_on_unlock_pressed()
+		State.RESULT:
+			_on_roll_again_pressed()
+
+
+## GDD: sensors run only while unlocked (Ready). With motion gestures on (user option),
+## they also run while Locked and on the Result screen to catch the key twist.
+## They never run while the die is rolling.
+func _update_motion() -> void:
+	var listening := (
+		_state == State.READY
+		or (motion_gestures_enabled and (_state == State.LOCKED or _state == State.RESULT))
+	)
+	_motion.set_active(listening)
+
+
+func _twist_available() -> bool:
+	return motion_gestures_enabled and _motion.has_gyroscope()
 
 
 ## Single entry point for roll requests: Roll button now, shake gesture in Chunk 9.
@@ -125,7 +168,7 @@ func _change_state(to: State) -> void:
 		)
 		return
 	_state = to
-	_motion.set_active(_state == State.READY)  # GDD: sensors only while unlocked and ready.
+	_update_motion()
 	_refresh_ui()
 	state_changed.emit(_state)
 
@@ -138,7 +181,7 @@ func _refresh_ui() -> void:
 	_result_label.text = str(_shown_face) if _state == State.RESULT else ""
 	match _state:
 		State.LOCKED:
-			_status_label.text = "Locked"
+			_status_label.text = "Locked - twist to unlock" if _twist_available() else "Locked"
 		State.READY:
 			_status_label.text = (
 				"Ready - shake or tap Roll" if _motion.has_accelerometer() else "Ready - tap Roll"
@@ -146,7 +189,7 @@ func _refresh_ui() -> void:
 		State.ROLLING:
 			_status_label.text = "Rolling..."
 		State.RESULT:
-			_status_label.text = "Result"
+			_status_label.text = "Result - twist to roll again" if _twist_available() else "Result"
 
 
 # --- Rolling ---
@@ -172,14 +215,3 @@ func _on_die_roll_finished() -> void:
 		assert(false, "Roll verification failed")
 	_shown_face = _die.get_face_toward(direction)  # Always show what the die shows.
 	_change_state(State.RESULT)
-
-
-## A deliberate shake rolls the die. The shake's strength and the phone's twist shape
-## the tumble (intensity and direction); the result is still decided by RollResolver.
-func _on_shake_detected(shake_intensity: float) -> void:
-	# Read the gyro before _start_roll(): leaving Ready deactivates and resets MotionInput.
-	var twist := MotionInput.device_to_world(_motion.angular_velocity, _camera) * SPIN_SIGN
-	var twist_speed := twist.length()
-	var twist_intensity := clampf(twist_speed / STRONG_TWIST_SPEED, 0.0, 1.0)
-	var spin_axis := twist if twist_speed >= MIN_TWIST_SPEED else Vector3.ZERO
-	_start_roll(maxf(shake_intensity, twist_intensity), spin_axis)

@@ -9,7 +9,7 @@ var _shake_count := 0
 var _last_shake := "none yet"
 var _shake_this_frame := false
 var _max_linear := 0.0
-
+var _twist_count := 0
 @onready var _motion: MotionInput = $MotionInput
 @onready var _die: Die = $D6
 @onready var _camera: Camera3D = $CameraRig/Camera3D
@@ -22,6 +22,7 @@ var _max_linear := 0.0
 
 func _ready() -> void:
 	_motion.shake_detected.connect(_on_shake_detected)
+	_motion.twist_detected.connect(_on_twist_detected)
 	_follow_button.pressed.connect(_on_follow_pressed)
 	_flip_button.pressed.connect(_on_flip_pressed)
 	_reset_button.pressed.connect(_on_reset_pressed)
@@ -81,6 +82,7 @@ func _build_report(linear: float) -> String:
 				]
 			),
 			"Shakes: %d   Last: %s" % [_shake_count, _last_shake],
+			"Twists: %d" % _twist_count,
 		]
 	)
 	return "\n".join(lines)
@@ -94,6 +96,10 @@ func _on_shake_detected(intensity: float) -> void:
 	_shake_count += 1
 	_last_shake = "#%d  intensity %.2f" % [_shake_count, intensity]
 	_shake_this_frame = true
+
+
+func _on_twist_detected() -> void:
+	_twist_count += 1
 
 
 func _on_follow_pressed() -> void:
@@ -111,6 +117,7 @@ func _on_reset_pressed() -> void:
 	_max_linear = 0.0
 	_shake_count = 0
 	_last_shake = "none yet"
+	_twist_count = 0
 
 
 func _update_buttons() -> void:

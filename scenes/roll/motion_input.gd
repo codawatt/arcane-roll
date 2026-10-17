@@ -8,6 +8,10 @@ extends Node
 ## Emitted once per deliberate shake. intensity (0..1) reflects how hard it was.
 signal shake_detected(intensity: float)
 signal accelerometer_detected
+## Emitted once per deliberate key twist (quick turn around the phone's long axis).
+signal twist_detected
+## Emitted the first time the gyroscope delivers data.
+signal gyroscope_detected
 ## A real accelerometer always reads ~9.8 m/s² (gravity); below this it is treated as absent.
 const ABSENT_ACCEL_LEVEL := 0.5
 ## Seconds the accelerometer may stay silent after activation before being reported absent.
@@ -27,7 +31,17 @@ const MIN_STROKE_GAP := 0.06
 @export var strong_shake := 50.0
 ## Minimum seconds between two detected shakes.
 @export var cooldown := 1.0
-
+@export_group("Key twist")
+## A twist counts once the phone has turned this far (radians) around its long axis in one go.
+@export var twist_angle := 0.8  # About 45 degrees.
+## The turn must reach at least this speed (rad/s) at some point, so slow handling never counts.
+@export var twist_peak_speed := 3.0
+## Turning slower than this (rad/s) ends the current twist.
+@export var twist_active_speed := 1.5
+## Long-axis rotation must be this many times stronger than rotation around the other axes.
+@export var twist_dominance := 1.5
+## Minimum seconds between two detected twists.
+@export var twist_cooldown := 0.8
 @export_group("Smoothing")
 ## Filter time constants in seconds: higher = smoother but slower to react.
 @export var accel_smoothing := 0.02
@@ -57,6 +71,9 @@ var _stroke_direction := Vector3.ZERO  # Unit direction of the current stroke.
 var _stroke_start_time := 0.0
 var _last_strong_time := 0.0
 var _sequence_peak := 0.0
+var _twist_angle := 0.0
+var _twist_peak := 0.0
+var _twist_cooldown_left := 0.0
 
 
 func _ready() -> void:
@@ -74,6 +91,8 @@ func set_active(active: bool) -> void:
 	linear_acceleration = Vector3.ZERO
 	raw_linear_acceleration = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
+	_twist_angle = 0.0
+	_twist_peak = 0.0
 
 
 func is_active() -> bool:
@@ -121,14 +140,16 @@ func _process(delta: float) -> void:
 
 	var accel := Input.get_accelerometer()
 	var gyro := Input.get_gyroscope()
+	if not _gyro_seen and gyro != Vector3.ZERO:
+		_gyro_seen = true
+		gyroscope_detected.emit()
+	_detect_twist(gyro, delta)  # Only needs the gyroscope, so it runs before the accelerometer check.
+
 	if not _accel_seen and accel.length() > ABSENT_ACCEL_LEVEL:
 		_accel_seen = true
 		accelerometer_detected.emit()
-	if gyro != Vector3.ZERO:
-		_gyro_seen = true
 	if not _accel_seen:
 		return
-
 	var gravity := Input.get_gravity()
 	_using_estimated_gravity = gravity.is_zero_approx()
 	if _using_estimated_gravity:
@@ -179,6 +200,33 @@ func _detect_shake(linear: Vector3) -> void:
 		_stroke_count = 0
 		_cooldown_left = cooldown
 		shake_detected.emit(intensity)
+
+
+## A key twist: one quick turn of the phone around its long (Y) axis, like turning a key.
+## The rotation must clearly dominate the other axes, reach a minimum speed, and add up
+## to twist_angle in one direction; ordinary handling is slower or tilts the phone instead.
+func _detect_twist(gyro: Vector3, delta: float) -> void:
+	_twist_cooldown_left = maxf(0.0, _twist_cooldown_left - delta)
+	var speed := absf(gyro.y)
+	var other_axes := Vector2(gyro.x, gyro.z).length()
+	var turning := speed >= twist_active_speed and speed >= other_axes * twist_dominance
+	var reversed := _twist_angle != 0.0 and signf(gyro.y) != signf(_twist_angle)
+	if not turning or reversed:
+		_twist_angle = 0.0  # Stopped, reversed or tilted: start measuring again.
+		_twist_peak = 0.0
+		if not turning:
+			return
+	_twist_angle += gyro.y * delta
+	_twist_peak = maxf(_twist_peak, speed)
+	if (
+		absf(_twist_angle) >= twist_angle
+		and _twist_peak >= twist_peak_speed
+		and _twist_cooldown_left <= 0.0
+	):
+		_twist_angle = 0.0
+		_twist_peak = 0.0
+		_twist_cooldown_left = twist_cooldown
+		twist_detected.emit()
 
 
 ## Frame-rate-independent smoothing factor for a given time constant.
