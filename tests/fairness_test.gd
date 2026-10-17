@@ -9,7 +9,7 @@ const ROLLS := 600_000
 ## a perfectly fair die exceeds this by chance only once in 1000 runs.
 const CHI_SQUARE_CRITICAL := 20.515
 ## Set >= 0 to reproduce a specific run (the seed is printed every run); -1 = new seed.
-const FIXED_SEED := 12345
+const FIXED_SEED := -1
 
 var _resolver: RollResolver
 var _batch_summary := ""
