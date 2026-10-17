@@ -13,6 +13,8 @@ var _current_id: ScreenId = ScreenId.MAIN_MENU
 
 @onready var _safe_area: MarginContainer = $UILayer/SafeArea
 @onready var _screen_host: Control = $UILayer/SafeArea/ScreenHost
+@onready var _die: Die = $World/DieAnchor/D6
+@onready var _face_reader: Marker3D = $World/FaceReader
 
 
 func _ready() -> void:
@@ -56,6 +58,7 @@ func _show_main_menu() -> void:
 
 func _show_roll_screen() -> void:
 	var roll := ROLL_SCREEN_SCENE.instantiate() as RollController
+	roll.setup(_die, _face_reader)  # Must happen before the screen enters the tree.
 	roll.exit_requested.connect(_show_main_menu, CONNECT_DEFERRED)
 	_swap_screen(roll, ScreenId.ROLL)
 
@@ -83,7 +86,8 @@ func _apply_safe_area() -> void:
 				safe.position.x * to_viewport.x,
 				safe.position.y * to_viewport.y,
 				(window_size.x - safe.end.x) * to_viewport.x,
-				(window_size.y - safe.end.y) * to_viewport.y)
+				(window_size.y - safe.end.y) * to_viewport.y
+			)
 	_safe_area.add_theme_constant_override("margin_left", roundi(margins.x))
 	_safe_area.add_theme_constant_override("margin_top", roundi(margins.y))
 	_safe_area.add_theme_constant_override("margin_right", roundi(margins.z))

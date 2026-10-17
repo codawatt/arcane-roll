@@ -27,19 +27,56 @@ theme_override_constants/margin_bottom = 64
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="ScreenLabel" type="Label" parent="Margin/Layout" unique_id=946286340]
+[node name="StatusLabel" type="Label" parent="Margin/Layout" unique_id=946286340]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
-text = "ROLL SCREEN (shell)"
+text = "Locked"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Margin/Layout" unique_id=2084195469]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ConfirmButton" type="Button" parent="Margin/Layout" unique_id=723543725]
+[node name="ResultLabel" type="Label" parent="Margin/Layout" unique_id=1909652049]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_override_font_sizes/font_size = 160
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ButtonBar" type="HBoxContainer" parent="Margin/Layout" unique_id=1714800140]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="UnlockButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1621018240]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Unlock"
+
+[node name="RollButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1958550235]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Roll"
+
+[node name="RollAgainButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1269800476]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 48
+text = "Roll Again
+"
+
+[node name="ConfirmButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=723543725]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 48
 text = "Confirm"
