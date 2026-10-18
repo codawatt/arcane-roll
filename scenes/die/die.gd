@@ -79,6 +79,7 @@ var _settle_angle := 0.0
 var _settle_velocity := 0.0
 var _settle_target := 0.0
 var _tumble_signaled := false
+var _pulse_tween: Tween
 
 
 func _ready() -> void:
@@ -190,6 +191,28 @@ func settle_spin(spin_speed: float) -> void:
 	_settle_velocity = spin_speed  # Start at the current speed: no visible jolt.
 	_settling = true
 	set_process(true)
+
+
+## Brief scale pop for feedback (unlock, result). Scales the Model child, so it never
+## interferes with roll orientation, which is set on this node.
+func pulse(amount: float = 0.12) -> void:
+	var model := $Model as Node3D
+	if _pulse_tween != null:
+		_pulse_tween.kill()
+	model.scale = Vector3.ONE
+	_pulse_tween = create_tween()
+	(
+		_pulse_tween
+		. tween_property(model, "scale", Vector3.ONE * (1.0 + amount), 0.08)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		_pulse_tween
+		. tween_property(model, "scale", Vector3.ONE, 0.4)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 func _process(delta: float) -> void:

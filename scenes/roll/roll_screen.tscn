@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c01ur4yqhp0p2" path="res://scenes/roll/roll_controller.gd" id="1_k4smy"]
 [ext_resource type="Script" uid="uid://b4bvqjlbfgnp1" path="res://scenes/roll/motion_input.gd" id="2_mr73m"]
+[ext_resource type="PackedScene" uid="uid://cen5tydlcjifg" path="res://scenes/roll/lock_overlay.tscn" id="3_1g7pv"]
 
 [node name="RollScreen" type="Control" unique_id=632862155]
 layout_mode = 3
@@ -52,13 +53,6 @@ custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="UnlockButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1621018240]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Unlock"
-metadata/no_click_sound = true
-
 [node name="RollButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1958550235]
 unique_name_in_owner = true
 layout_mode = 2
@@ -81,3 +75,18 @@ text = "Confirm"
 
 [node name="MotionInput" type="Node" parent="." unique_id=1179229235]
 script = ExtResource("2_mr73m")
+
+[node name="LockOverlay" parent="." unique_id=2102785378 instance=ExtResource("3_1g7pv")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -230.0
+offset_right = 310.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2

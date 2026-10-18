@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cen5tydlcjifg"]
+
+[ext_resource type="Script" uid="uid://8qxxr0d6cv48" path="res://scenes/roll/lock_overlay.gd" id="1_j2pao"]
+
+[node name="LockOverlay" type="PanelContainer" unique_id=2102785378]
+offset_right = 40.0
+offset_bottom = 5.0
+script = ExtResource("1_j2pao")
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=107186784]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Icons" type="Control" parent="Content" unique_id=1178174027]
+custom_minimum_size = Vector2(0, 240)
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="Content" unique_id=1303695958]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+horizontal_alignment = 1
+vertical_alignment = 1
