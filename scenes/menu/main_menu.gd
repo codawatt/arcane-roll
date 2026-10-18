@@ -4,14 +4,15 @@ extends Screen
 ## until more dice exist), Start / Customize / Credits, and the version label.
 
 signal start_requested
-signal customize_requested
-signal credits_requested
 
 const PREVIEW_SPIN_SPEED := 0.6  # rad/s around the vertical axis.
 const PREVIEW_SPIN_RAMP := 1.5  # rad/s²: the spin eases in instead of starting abruptly.
 
 var _die: Die
 var _spin_speed := 0.0
+
+@onready var _customize_panel: CustomizePanel = %CustomizePanel
+@onready var _credits_panel: CreditsPanel = %CreditsPanel
 
 
 ## Called by Main before the screen enters the tree.
@@ -29,8 +30,8 @@ func _on_start_pressed() -> void:
 func _ready() -> void:
 	assert(_die != null, "MainMenu.setup() must be called before the screen is added.")
 	%StartButton.pressed.connect(_on_start_pressed)
-	%CustomizeButton.pressed.connect(customize_requested.emit)
-	%CreditsButton.pressed.connect(credits_requested.emit)
+	%CustomizeButton.pressed.connect(_customize_panel.open)
+	%CreditsButton.pressed.connect(_credits_panel.open)
 	%VersionLabel.text = "v%s" % ProjectSettings.get_setting("application/config/version")
 	# Dice selection comes with additional dice (GDD §8, future updates): disabled for now.
 	for arrow: Button in [%PrevButton, %NextButton]:
@@ -46,3 +47,12 @@ func _process(delta: float) -> void:
 	_die.global_basis = (
 		(Basis(Vector3.UP, _spin_speed * delta) * _die.global_basis).orthonormalized()
 	)
+
+
+## Android Back closes an open panel first, instead of leaving the app.
+func handle_back() -> bool:
+	for panel: BottomSheet in [_customize_panel, _credits_panel]:
+		if panel.is_open():
+			panel.close()
+			return true
+	return false

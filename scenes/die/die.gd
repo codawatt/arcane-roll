@@ -7,7 +7,8 @@ extends Node3D
 signal roll_finished
 ## Emitted at every bounce during a roll; strength is 0..1. Chunk 14 plays the landing sound here.
 signal impact(strength: float)
-
+## Emitted once per roll when the free tumble ends and the settle begins.
+signal tumble_finished
 ## Outward face normals in the die's local space, keyed by face value.
 ## Measured from dice_prop.blend's pip geometry after Godot's Y-up conversion.
 ## Opposite faces sum to 7.
@@ -77,6 +78,8 @@ var _settle_from := Basis.IDENTITY
 var _settle_angle := 0.0
 var _settle_velocity := 0.0
 var _settle_target := 0.0
+var _tumble_signaled := false
+var _pulse_tween: Tween
 
 
 func _ready() -> void:
@@ -157,6 +160,7 @@ func roll_to(target: Basis, intensity: float = 0.5, spin_axis: Vector3 = Vector3
 		_correction = -_correction  # Same rotation, shorter way round.
 	_play_time = 0.0
 	_next_impact = 0
+	_tumble_signaled = false
 	_rolling = true
 	set_process(true)
 
@@ -189,6 +193,28 @@ func settle_spin(spin_speed: float) -> void:
 	set_process(true)
 
 
+## Brief scale pop for feedback (unlock, result). Scales the Model child, so it never
+## interferes with roll orientation, which is set on this node.
+func pulse(amount: float = 0.12) -> void:
+	var model := $Model as Node3D
+	if _pulse_tween != null:
+		_pulse_tween.kill()
+	model.scale = Vector3.ONE
+	_pulse_tween = create_tween()
+	(
+		_pulse_tween
+		. tween_property(model, "scale", Vector3.ONE * (1.0 + amount), 0.08)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		_pulse_tween
+		. tween_property(model, "scale", Vector3.ONE, 0.4)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
+
+
 func _process(delta: float) -> void:
 	if _settling:
 		_step_settle(delta)
@@ -197,7 +223,9 @@ func _process(delta: float) -> void:
 	while _next_impact < _impact_times.size() and _impact_times[_next_impact] <= _play_time:
 		impact.emit(_impact_strengths[_next_impact])
 		_next_impact += 1
-
+	if not _tumble_signaled and _play_time >= _settle_start_time:
+		_tumble_signaled = true
+		tumble_finished.emit()
 	var frame_position := _play_time / SIM_STEP
 	var i := floori(frame_position)
 	if i >= _frames.size() - 1:

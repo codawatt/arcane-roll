@@ -24,6 +24,7 @@ config/icon="uid://b3ns7fbfxqr18"
 [autoload]
 
 Settings="*uid://bjv7i0iub7ar"
+Sfx="*uid://dibd42buwf301"
 
 [debug]
 

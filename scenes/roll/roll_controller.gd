@@ -28,13 +28,14 @@ var _resolver := RollResolver.new()
 var _result := 0  # Generated result of the current roll.
 var _shown_face := 0  # Face detected on the settled die: what the player sees.
 var _camera: Camera3D
+var _status_tween: Tween
 @onready var _status_label: Label = %StatusLabel
 @onready var _result_label: Label = %ResultLabel
-@onready var _unlock_button: Button = %UnlockButton
 @onready var _roll_button: Button = %RollButton
 @onready var _roll_again_button: Button = %RollAgainButton
 @onready var _confirm_button: Button = %ConfirmButton
 @onready var _motion: MotionInput = $MotionInput
+@onready var _lock_overlay: LockOverlay = %LockOverlay
 
 
 ## Called by Main before the screen enters the tree.
@@ -53,11 +54,13 @@ func _ready() -> void:
 	_motion.accelerometer_detected.connect(_refresh_ui)
 	_motion.twist_detected.connect(_on_twist_detected)
 	_motion.gyroscope_detected.connect(_refresh_ui)
-	_unlock_button.pressed.connect(_on_unlock_pressed)
+	_lock_overlay.tapped.connect(_on_unlock_pressed)
 	_roll_button.pressed.connect(_on_roll_pressed)
 	_roll_again_button.pressed.connect(_on_roll_again_pressed)
 	_confirm_button.pressed.connect(exit_requested.emit)
 	_die.roll_finished.connect(_on_die_roll_finished)
+	_die.impact.connect(_on_die_impact)
+	_die.tumble_finished.connect(Sfx.stop_rattle)
 	Settings.changed.connect(_apply_settings)
 	_apply_settings()
 
@@ -65,9 +68,14 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	# The die outlives this screen: disconnect explicitly, then land any roll in
 	# progress (Back mid-roll) instead of leaving the die frozen mid-air.
+	Sfx.stop_rattle()
 	if is_instance_valid(_die):
 		if _die.roll_finished.is_connected(_on_die_roll_finished):
 			_die.roll_finished.disconnect(_on_die_roll_finished)
+		if _die.impact.is_connected(_on_die_impact):
+			_die.impact.disconnect(_on_die_impact)
+		if _die.tumble_finished.is_connected(Sfx.stop_rattle):
+			_die.tumble_finished.disconnect(Sfx.stop_rattle)
 		_die.finish_roll_now()
 
 
@@ -148,6 +156,7 @@ func _start_roll(intensity: float, spin_axis: Vector3) -> void:
 	var target := _resolver.rest_basis_for(_result, _read_direction())
 	_change_state(State.ROLLING)
 	_die.roll_to(target, intensity, spin_axis)
+	Sfx.start_rattle(intensity)
 
 
 # --- State machine ---
@@ -172,29 +181,44 @@ func _change_state(to: State) -> void:
 			"RollController: illegal transition %s -> %s" % [State.keys()[_state], State.keys()[to]]
 		)
 		return
+	var from := _state
 	_state = to
 	_update_motion()
 	_refresh_ui()
+	_on_transition(from, to)
 	state_changed.emit(_state)
 
 
 func _refresh_ui() -> void:
-	_unlock_button.visible = _state == State.LOCKED
 	_roll_button.visible = _state == State.READY
 	_roll_again_button.visible = _state == State.RESULT
 	_confirm_button.visible = _state == State.RESULT
-	_result_label.text = str(_shown_face) if _state == State.RESULT else ""
+	_lock_overlay.set_twist_hint(_twist_available())
+	_lock_overlay.set_shown(_state == State.LOCKED)
+	if _state != State.RESULT:
+		_result_label.text = ""
+	_set_status(_status_text())
+
+
+func _status_text() -> String:
 	match _state:
-		State.LOCKED:
-			_status_label.text = "Locked - twist to unlock" if _twist_available() else "Locked"
 		State.READY:
-			_status_label.text = (
-				"Ready - shake or tap Roll" if _motion.has_accelerometer() else "Ready - tap Roll"
-			)
-		State.ROLLING:
-			_status_label.text = "Rolling..."
+			return "Shake or tap Roll" if _motion.has_accelerometer() else "Tap Roll"
 		State.RESULT:
-			_status_label.text = "Result - twist to roll again" if _twist_available() else "Result"
+			return "Twist to roll again" if _twist_available() else ""
+	return ""  # Locked: the overlay explains. Rolling: nothing distracts from the tumble.
+
+
+## Cross-fades the status line instead of letting the text jump.
+func _set_status(text: String) -> void:
+	if _status_label.text == text:
+		return
+	if _status_tween != null:
+		_status_tween.kill()
+	_status_tween = create_tween()
+	_status_tween.tween_property(_status_label, "modulate:a", 0.0, 0.12)
+	_status_tween.tween_callback(func() -> void: _status_label.text = text)
+	_status_tween.tween_property(_status_label, "modulate:a", 1.0, 0.2)
 
 
 # --- Rolling ---
@@ -207,6 +231,7 @@ func _read_direction() -> Vector3:
 func _on_die_roll_finished() -> void:
 	if _state != State.ROLLING:
 		return
+	Sfx.stop_rattle()  # In case the roll was cut short (fast-forward on pause).
 	# GDD §4 steps 5-7: detect the face from the die's orientation, verify, display.
 	var direction := _read_direction()
 	if not RollResolver.verify(_die, direction, _result):
@@ -220,3 +245,36 @@ func _on_die_roll_finished() -> void:
 		assert(false, "Roll verification failed")
 	_shown_face = _die.get_face_toward(direction)  # Always show what the die shows.
 	_change_state(State.RESULT)
+
+
+# --- AUDIO ---
+## Sound and visual feedback for each state change.
+func _on_transition(from: State, to: State) -> void:
+	if from == State.LOCKED and to == State.READY:
+		Sfx.play(Sfx.Sound.UNLOCK)
+		_die.pulse()
+	elif to == State.RESULT:
+		Sfx.play(Sfx.Sound.REVEAL)
+		_present_result()
+
+
+## The number pops in with a small overshoot, in the accent color, and the die pops once.
+func _present_result() -> void:
+	_result_label.text = str(_shown_face)
+	_result_label.add_theme_color_override("font_color", Settings.triangle_color.lightened(0.25))
+	_result_label.pivot_offset = _result_label.size / 2.0
+	_result_label.scale = Vector2.ONE * 0.3
+	_result_label.modulate.a = 0.0
+	var tween := create_tween().set_parallel()
+	(
+		tween
+		. tween_property(_result_label, "scale", Vector2.ONE, 0.45)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
+	tween.tween_property(_result_label, "modulate:a", 1.0, 0.15)
+	_die.pulse(0.08)
+
+
+func _on_die_impact(strength: float) -> void:
+	Sfx.play_impact(strength)
