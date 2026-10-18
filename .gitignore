@@ -1,3 +1,26 @@
-# Godot 4+ specific ignores
+# Godot 4 cache and local data
 .godot/
+
+# Android Gradle build template (only used if we ever switch to Gradle builds)
 /android/
+
+# Blender autosave backups
+*.blend1
+*.blend2
+
+# Build output
+/builds/
+*.apk
+*.aab
+*.idsig
+
+# Signing keys and credentials — NEVER commit
+*.keystore
+*.jks
+*.p12
+.env
+
+# OS / editor clutter
+.DS_Store
+*.swp
+*~

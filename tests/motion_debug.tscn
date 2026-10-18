@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://bngn06fto413w"]
+
+[ext_resource type="Script" uid="uid://cdr1f8t672pga" path="res://tests/motion_debug.gd" id="1_rnq0q"]
+[ext_resource type="Environment" uid="uid://c2c5tyskqvvbi" path="res://scenes/main/main_environment.tres" id="2_ygvpg"]
+[ext_resource type="PackedScene" uid="uid://bnj2t2pygcpdi" path="res://scenes/die/d6.tscn" id="3_85uqn"]
+[ext_resource type="Script" uid="uid://b4bvqjlbfgnp1" path="res://scenes/roll/motion_input.gd" id="3_f77ua"]
+[ext_resource type="Script" uid="uid://ivjkcjhrc74g" path="res://tests/sensor_graph.gd" id="5_ydl1l"]
+
+[node name="MotionDebug" type="Node3D" unique_id=29860196]
+script = ExtResource("1_rnq0q")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=218221496]
+environment = ExtResource("2_ygvpg")
+
+[node name="MotionInput" type="Node" parent="." unique_id=1117378951]
+script = ExtResource("3_f77ua")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1958687152]
+transform = Transform3D(0.81915206, -0.32898995, 0.46984634, 0, 0.81915206, 0.57357645, -0.57357645, -0.46984634, 0.6710101, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=268564610]
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 1, 0, 0, 6)
+keep_aspect = 0
+fov = 30.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=1184735647]
+transform = Transform3D(0.9396926, -0.116977766, 0.3213938, 0, 0.9396926, 0.34202012, -0.34202012, -0.3213938, 0.8830222, 0, 0, 0)
+
+[node name="FaceReader" type="Marker3D" parent="." unique_id=1261278895]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="D6" parent="." unique_id=1854806385 instance=ExtResource("3_85uqn")]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=824468763]
+
+[node name="InfoLabel" type="Label" parent="HUD" unique_id=202617105]
+offset_left = 40.0
+offset_top = 60.0
+offset_right = 80.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 30
+
+[node name="Graph" type="Control" parent="HUD" unique_id=1128768960]
+layout_mode = 3
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -760.0
+offset_right = -40.0
+offset_bottom = -360.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_ydl1l")
+
+[node name="Buttons" type="HBoxContainer" parent="HUD" unique_id=538468871]
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -300.0
+offset_right = -40.0
+offset_bottom = -160.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 24
+
+[node name="FollowButton" type="Button" parent="HUD/Buttons" unique_id=179404690]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "Follow"
+
+[node name="FlipButton" type="Button" parent="HUD/Buttons" unique_id=764933711]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "Flip"
+
+[node name="ResetButton" type="Button" parent="HUD/Buttons" unique_id=1279223985]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 34
+text = "Reset"
+
+[node name="Backdrop" type="CanvasLayer" parent="." unique_id=516366756]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Backdrop" unique_id=1089314158]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)

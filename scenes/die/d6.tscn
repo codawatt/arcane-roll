@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bnj2t2pygcpdi"]
+
+[ext_resource type="Script" uid="uid://wyw35fy8lkml" path="res://scenes/die/die.gd" id="1_ktpdo"]
+[ext_resource type="PackedScene" uid="uid://b8iemek5wmwmr" path="res://assets/models/dice_prop.blend" id="2_n44ct"]
+
+[node name="D6" type="Node3D" unique_id=1854806385]
+script = ExtResource("1_ktpdo")
+
+[node name="Model" parent="." unique_id=333576779 instance=ExtResource("2_n44ct")]
