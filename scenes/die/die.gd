@@ -54,6 +54,12 @@ const REST_SPIN := 0.05  # rad/s
 ## Hard limit for one roll; the die always lands by then.
 @export var max_roll_time := 4.0
 
+@export_group("Preview settle")
+## Spring used when the menu's spinning preview eases into its square-on rest.
+## Higher frequency = snappier; lower damping = more overshoot.
+@export var preview_settle_frequency := 7.0
+@export_range(0.1, 1.0) var preview_settle_damping := 0.45
+
 var _rest_position := Vector3.ZERO
 var _rng := RandomNumberGenerator.new()  # Cosmetic only (tumble axes); never affects results.
 var _rolling := false
@@ -66,6 +72,11 @@ var _settle_start_time := 0.0
 var _target := Quaternion.IDENTITY
 var _correction := Quaternion.IDENTITY
 var _play_time := 0.0
+var _settling := false
+var _settle_from := Basis.IDENTITY
+var _settle_angle := 0.0
+var _settle_velocity := 0.0
+var _settle_target := 0.0
 
 
 func _ready() -> void:
@@ -132,6 +143,7 @@ func get_roll_duration() -> float:
 ## intensity (0..1) scales spin and hop. spin_axis (world space, optional) sets the
 ## initial tumble direction; Chunk 9 passes the gyroscope here.
 func roll_to(target: Basis, intensity: float = 0.5, spin_axis: Vector3 = Vector3.ZERO) -> void:
+	_settling = false
 	var strength := clampf(intensity, 0.0, 1.0)
 	var axis := _random_tumble_axis() if spin_axis.is_zero_approx() else spin_axis.normalized()
 	var natural_rest := _simulate(
@@ -155,7 +167,32 @@ func finish_roll_now() -> void:
 		_land()
 
 
+func is_settling() -> bool:
+	return _settling
+
+
+## Ends a spinning preview (spin_speed = current yaw speed in rad/s) by continuing in the
+## same direction to the next square-on angle, then overshooting slightly and settling.
+## Leaves the die flat and lined up with the world axes (the corner-facing camera view).
+func settle_spin(spin_speed: float) -> void:
+	if _rolling:
+		return
+	var direction := 1.0 if spin_speed >= 0.0 else -1.0
+	var min_travel := absf(spin_speed) * 0.25  # Never stop sooner than the motion suggests.
+	var to_square: float = -_yaw_from_square() * direction
+	var quarter_turns := maxi(0, ceili((min_travel - to_square) / (PI / 2.0)))
+	_settle_target = direction * (to_square + quarter_turns * PI / 2.0)
+	_settle_from = global_basis.orthonormalized()
+	_settle_angle = 0.0
+	_settle_velocity = spin_speed  # Start at the current speed: no visible jolt.
+	_settling = true
+	set_process(true)
+
+
 func _process(delta: float) -> void:
+	if _settling:
+		_step_settle(delta)
+		return
 	_play_time += delta
 	while _next_impact < _impact_times.size() and _impact_times[_next_impact] <= _play_time:
 		impact.emit(_impact_strengths[_next_impact])
@@ -265,6 +302,37 @@ func _nearest_rest(orientation: Quaternion) -> Quaternion:
 	if axis.is_zero_approx():
 		return orientation
 	return Quaternion(axis.normalized(), up_normal.angle_to(Vector3.UP)) * orientation
+
+
+## Yaw around world up that the die is away from being lined up with the axes,
+## in [-PI/4, PI/4]. Measured from the side face that points closest to +Z.
+func _yaw_from_square() -> float:
+	var world_basis := global_basis.orthonormalized()
+	var closest := Vector3.BACK
+	var best := -INF
+	for face: int in FACE_NORMALS:
+		var normal := world_basis * FACE_NORMALS[face]
+		if absf(normal.y) < 0.5 and normal.z > best:  # Side faces only.
+			best = normal.z
+			closest = normal
+	return atan2(closest.x, closest.z)
+
+
+func _step_settle(delta: float) -> void:
+	var stiffness := preview_settle_frequency * preview_settle_frequency
+	var damping := 2.0 * preview_settle_damping * preview_settle_frequency
+	var steps := maxi(1, ceili(delta / SIM_STEP))  # Fixed sub-steps: stable at any frame rate.
+	var dt := delta / steps
+	for _i in steps:
+		_settle_velocity += (
+			((_settle_target - _settle_angle) * stiffness - _settle_velocity * damping) * dt
+		)
+		_settle_angle += _settle_velocity * dt
+	if absf(_settle_target - _settle_angle) < 0.001 and absf(_settle_velocity) < 0.01:
+		_settle_angle = _settle_target  # Land exactly square-on.
+		_settling = false
+		set_process(false)
+	global_basis = Basis(Vector3.UP, _settle_angle) * _settle_from
 
 
 ## Mostly horizontal axis, so the die tumbles end over end rather than spinning like a top.

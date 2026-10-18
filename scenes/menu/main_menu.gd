@@ -19,9 +19,16 @@ func setup(die: Die) -> void:
 	_die = die
 
 
+## The preview eases into a square-on rest with a small overshoot instead of freezing.
+## The die finishes that motion on its own after this screen is gone.
+func _on_start_pressed() -> void:
+	_die.settle_spin(_spin_speed)
+	start_requested.emit()
+
+
 func _ready() -> void:
 	assert(_die != null, "MainMenu.setup() must be called before the screen is added.")
-	%StartButton.pressed.connect(start_requested.emit)
+	%StartButton.pressed.connect(_on_start_pressed)
 	%CustomizeButton.pressed.connect(customize_requested.emit)
 	%CreditsButton.pressed.connect(credits_requested.emit)
 	%VersionLabel.text = "v%s" % ProjectSettings.get_setting("application/config/version")
@@ -32,7 +39,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _die.is_rolling():
+	if _die.is_rolling() or _die.is_settling():
 		return
 	_spin_speed = move_toward(_spin_speed, PREVIEW_SPIN_SPEED, PREVIEW_SPIN_RAMP * delta)
 	# Vertical axis only, so the die stays flat on a face for the next roll.
