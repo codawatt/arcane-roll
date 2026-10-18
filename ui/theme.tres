@@ -1,0 +1,88 @@
+[gd_resource type="Theme" format=3 uid="uid://dycue1vkyw053"]
+
+[ext_resource type="FontFile" uid="uid://bu0w1pc28fjlg" path="res://assets/fonts/Dungeon Crawler CB.ttf" id="1_rqugq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_denks"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(1, 1, 1, 0.039215688)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.078431375)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_denks"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rqugq"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(1, 1, 1, 0.12156863)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.18039216)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jf26r"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(1, 1, 1, 0.078431375)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.18039216)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6lx7k"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(1, 1, 1, 0.21960784)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 0.18039216)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[resource]
+default_font = ExtResource("1_rqugq")
+default_font_size = 74
+Button/colors/font_color = Color(0.875, 0.875, 0.875, 1)
+Button/colors/font_disabled_color = Color(0.9490196, 0.93333334, 1, 0.3019608)
+Button/colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/fonts/font = ExtResource("1_rqugq")
+Button/styles/disabled = SubResource("StyleBoxFlat_denks")
+Button/styles/focus = SubResource("StyleBoxEmpty_denks")
+Button/styles/hover = SubResource("StyleBoxFlat_rqugq")
+Button/styles/normal = SubResource("StyleBoxFlat_jf26r")
+Button/styles/pressed = SubResource("StyleBoxFlat_6lx7k")
+Label/colors/font_color = Color(0.9490196, 0.93333334, 1, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.4)
+Label/constants/shadow_offset_x = 0
+Label/constants/shadow_offset_y = 3
+Label/fonts/font = ExtResource("1_rqugq")

@@ -54,6 +54,7 @@ func _handle_back() -> void:
 
 func _show_main_menu() -> void:
 	var menu := MAIN_MENU_SCENE.instantiate() as MainMenu
+	menu.setup(_die)
 	# Deferred: the old screen is freed while its own button signal is still emitting.
 	menu.start_requested.connect(_show_roll_screen, CONNECT_DEFERRED)
 	_swap_screen(menu, ScreenId.MAIN_MENU)

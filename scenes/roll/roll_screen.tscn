@@ -56,21 +56,18 @@ theme_override_constants/separation = 32
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Unlock"
 
 [node name="RollButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1958550235]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Roll"
 
 [node name="RollAgainButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1269800476]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Roll Again
 "
 
@@ -79,7 +76,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 48
 text = "Confirm"
 
 [node name="MotionInput" type="Node" parent="." unique_id=1179229235]

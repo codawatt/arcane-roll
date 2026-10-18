@@ -43,6 +43,10 @@ window/handheld/orientation=1
 
 project/assembly_name="Arcane Roll"
 
+[gui]
+
+theme/custom="uid://dycue1vkyw053"
+
 [input_devices]
 
 sensors/enable_accelerometer=true
