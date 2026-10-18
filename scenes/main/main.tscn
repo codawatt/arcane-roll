@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dery74hcafvy0" path="res://scenes/main/main.gd" id="1_hyk8p"]
 [ext_resource type="Environment" uid="uid://c2c5tyskqvvbi" path="res://scenes/main/main_environment.tres" id="2_iuonh"]
 [ext_resource type="PackedScene" uid="uid://bnj2t2pygcpdi" path="res://scenes/die/d6.tscn" id="3_k2fmo"]
+[ext_resource type="PackedScene" uid="uid://dhuqwwobk5ti2" path="res://scenes/background/background.tscn" id="3_l3cfh"]
 
 [node name="Main" type="Node" unique_id=990455748]
 script = ExtResource("1_hyk8p")
@@ -13,10 +14,7 @@ environment = ExtResource("2_iuonh")
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1605619376]
 layer = -1
 
-[node name="BackgroundPlaceholder" type="ColorRect" parent="BackgroundLayer" unique_id=53871710]
-offset_right = 40.0
-offset_bottom = 40.0
-color = Color(0, 0, 0, 1)
+[node name="Background" parent="BackgroundLayer" unique_id=640844515 instance=ExtResource("3_l3cfh")]
 
 [node name="World" type="Node3D" parent="." unique_id=1964011090]
 

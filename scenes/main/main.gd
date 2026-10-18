@@ -16,11 +16,13 @@ var _current_id: ScreenId = ScreenId.MAIN_MENU
 @onready var _die: Die = $World/DieAnchor/D6
 @onready var _face_reader: Marker3D = $World/FaceReader
 @onready var _camera: Camera3D = $World/CameraRig/Camera3D
+@onready var _background: AppBackground = $BackgroundLayer/Background
 
 
 func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_safe_area)
 	_apply_safe_area()
+	_background.set_bands_shown(false, false)  # Start hidden; the menu slides them in.
 	_show_main_menu()
 
 
@@ -55,6 +57,7 @@ func _show_main_menu() -> void:
 	# Deferred: the old screen is freed while its own button signal is still emitting.
 	menu.start_requested.connect(_show_roll_screen, CONNECT_DEFERRED)
 	_swap_screen(menu, ScreenId.MAIN_MENU)
+	_background.set_bands_shown(true)
 
 
 func _show_roll_screen() -> void:
@@ -62,6 +65,7 @@ func _show_roll_screen() -> void:
 	roll.setup(_die, _face_reader, _camera)
 	roll.exit_requested.connect(_show_main_menu, CONNECT_DEFERRED)
 	_swap_screen(roll, ScreenId.ROLL)
+	_background.set_bands_shown(false)
 
 
 func _swap_screen(new_screen: Screen, id: ScreenId) -> void:

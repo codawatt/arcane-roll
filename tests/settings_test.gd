@@ -1,7 +1,6 @@
 extends Control
 ## Chunk 10 test: change preferences, restart the app, and confirm they persist.
 
-@onready var _background: ColorRect = $Background
 @onready var _info_label: Label = %InfoLabel
 
 
@@ -23,7 +22,6 @@ func _on_randomize_pressed() -> void:
 
 
 func _refresh() -> void:
-	_background.color = Settings.background_color
 	_info_label.text = (
 		"Background  #%s\nDots  #%s\nTriangles  #%s\nSFX muted: %s\nMotion gestures: %s\n\n%s"
 		% [

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c8p1rus6c4tnf"]
 
 [ext_resource type="Script" uid="uid://dfqmlenpl85r3" path="res://tests/settings_test.gd" id="1_slb8x"]
+[ext_resource type="PackedScene" uid="uid://dhuqwwobk5ti2" path="res://scenes/background/background.tscn" id="2_xuhot"]
 
 [node name="SettingsTest" type="Control" unique_id=123813634]
 layout_mode = 3
@@ -11,13 +12,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_slb8x")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1007557519]
+[node name="Background" parent="." unique_id=640844515 instance=ExtResource("2_xuhot")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Margin" type="MarginContainer" parent="." unique_id=2021756469]
 layout_mode = 1

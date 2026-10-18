@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dhuqwwobk5ti2"]
+
+[ext_resource type="Script" uid="uid://b3apujahajcd4" path="res://scenes/background/background.gd" id="1_pesyb"]
+[ext_resource type="Shader" uid="uid://bj221n1e38vnd" path="res://scenes/background/dotted_background.gdshader" id="2_ewwm8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pesyb"]
+shader = ExtResource("2_ewwm8")
+shader_parameter/background_color = Vector4(0.118, 0.106, 0.18, 1)
+shader_parameter/dot_color = Vector4(0.227, 0.2, 0.345, 1)
+shader_parameter/triangle_color = Vector4(0.557, 0.486, 0.765, 1)
+shader_parameter/rect_size = Vector2(1080, 1920)
+shader_parameter/dot_spacing = 200.0
+shader_parameter/dot_radius = 40.0
+shader_parameter/dot_drift = Vector2(16, -32)
+shader_parameter/star_size_variation = 0.2
+shader_parameter/star_rotation_variation = 0.55
+shader_parameter/tooth_width = 230.0
+shader_parameter/tooth_depth = 100.0
+shader_parameter/glide_speed = 30.0
+shader_parameter/shadow_color = Vector4(0, 0, 0, 0.35)
+shader_parameter/shadow_offset = Vector2(10, 14)
+shader_parameter/shadow_softness = 8.0
+shader_parameter/band_reveal = 1.0
+
+[node name="Background" type="Control" unique_id=640844515]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pesyb")
+
+[node name="Pattern" type="ColorRect" parent="." unique_id=1111155401]
+material = SubResource("ShaderMaterial_pesyb")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
