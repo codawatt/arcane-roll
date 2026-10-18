@@ -68,6 +68,13 @@ corner_radius_top_right = 28
 corner_radius_bottom_right = 28
 corner_radius_bottom_left = 28
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_76jua"]
+bg_color = Color(0.08235294, 0.07058824, 0.12156863, 0.9490196)
+border_width_top = 5
+border_color = Color(1, 1, 1, 0.14901961)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+
 [resource]
 default_font = ExtResource("1_rqugq")
 default_font_size = 74
@@ -86,3 +93,4 @@ Label/colors/font_shadow_color = Color(0, 0, 0, 0.4)
 Label/constants/shadow_offset_x = 0
 Label/constants/shadow_offset_y = 3
 Label/fonts/font = ExtResource("1_rqugq")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_76jua")

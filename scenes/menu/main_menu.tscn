@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dopw0478cv833"]
 
 [ext_resource type="Script" uid="uid://ck8ksnoxi0hex" path="res://scenes/menu/main_menu.gd" id="1_nl8w3"]
+[ext_resource type="PackedScene" uid="uid://bsooy4siepivp" path="res://scenes/menu/customize_panel.tscn" id="2_3rkf3"]
 
 [node name="MainMenu" type="Control" unique_id=632862155]
 layout_mode = 3
@@ -131,3 +132,8 @@ theme_override_font_sizes/font_size = 70
 text = "D6"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CustomizePanel" parent="." unique_id=1569743071 instance=ExtResource("2_3rkf3")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

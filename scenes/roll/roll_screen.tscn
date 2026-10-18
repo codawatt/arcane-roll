@@ -57,6 +57,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Unlock"
+metadata/no_click_sound = true
 
 [node name="RollButton" type="Button" parent="Margin/Layout/ButtonBar" unique_id=1958550235]
 unique_name_in_owner = true

@@ -58,6 +58,8 @@ func _ready() -> void:
 	_roll_again_button.pressed.connect(_on_roll_again_pressed)
 	_confirm_button.pressed.connect(exit_requested.emit)
 	_die.roll_finished.connect(_on_die_roll_finished)
+	_die.impact.connect(_on_die_impact)
+	_die.tumble_finished.connect(Sfx.stop_rattle)
 	Settings.changed.connect(_apply_settings)
 	_apply_settings()
 
@@ -65,9 +67,14 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	# The die outlives this screen: disconnect explicitly, then land any roll in
 	# progress (Back mid-roll) instead of leaving the die frozen mid-air.
+	Sfx.stop_rattle()
 	if is_instance_valid(_die):
 		if _die.roll_finished.is_connected(_on_die_roll_finished):
 			_die.roll_finished.disconnect(_on_die_roll_finished)
+		if _die.impact.is_connected(_on_die_impact):
+			_die.impact.disconnect(_on_die_impact)
+		if _die.tumble_finished.is_connected(Sfx.stop_rattle):
+			_die.tumble_finished.disconnect(Sfx.stop_rattle)
 		_die.finish_roll_now()
 
 
@@ -148,6 +155,7 @@ func _start_roll(intensity: float, spin_axis: Vector3) -> void:
 	var target := _resolver.rest_basis_for(_result, _read_direction())
 	_change_state(State.ROLLING)
 	_die.roll_to(target, intensity, spin_axis)
+	Sfx.start_rattle(intensity)
 
 
 # --- State machine ---
@@ -172,9 +180,11 @@ func _change_state(to: State) -> void:
 			"RollController: illegal transition %s -> %s" % [State.keys()[_state], State.keys()[to]]
 		)
 		return
+	var from := _state
 	_state = to
 	_update_motion()
 	_refresh_ui()
+	_play_transition_sound(from, to)
 	state_changed.emit(_state)
 
 
@@ -207,6 +217,7 @@ func _read_direction() -> Vector3:
 func _on_die_roll_finished() -> void:
 	if _state != State.ROLLING:
 		return
+	Sfx.stop_rattle()  # In case the roll was cut short (fast-forward on pause).
 	# GDD §4 steps 5-7: detect the face from the die's orientation, verify, display.
 	var direction := _read_direction()
 	if not RollResolver.verify(_die, direction, _result):
@@ -220,3 +231,15 @@ func _on_die_roll_finished() -> void:
 		assert(false, "Roll verification failed")
 	_shown_face = _die.get_face_toward(direction)  # Always show what the die shows.
 	_change_state(State.RESULT)
+
+
+# --- AUDIO ---
+func _play_transition_sound(from: State, to: State) -> void:
+	if from == State.LOCKED and to == State.READY:
+		Sfx.play(Sfx.Sound.UNLOCK)
+	elif to == State.RESULT:
+		Sfx.play(Sfx.Sound.REVEAL)
+
+
+func _on_die_impact(strength: float) -> void:
+	Sfx.play_impact(strength)
